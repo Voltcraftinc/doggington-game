@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="doggington-game.css">
+    <title>Doggington Top Trumps</title>
+</head>
+<body>
+    <div id="main-container">
+        <!-- Logo -->
+        <img id="doggington-logo" src="images/doggingtonlogo.png" alt="Doggington Logo">
+
+        <!-- Score Display -->
+        <div id="score-container">
+            <div class="score" id="p1-score">Player One Score: 0</div>
+            <div class="score" id="p2-score">CPU Score: 0</div>
+        </div>
+
+        <!-- Card Display -->
+        <div id="top-trumps-container">
+            <div class="card" id="p1-card">
+                <h2>Player One's Dog</h2>
+                <img id="p1-card-pic" src="" alt="Player One's Dog">
+            </div>
+            <div class="card" id="p2-card">
+                <h2>CPU's Dog</h2>
+                <img id="p2-card-pic" src="images/backer.png" alt="CPU's Card">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div id="button-container">
+            <button class="stat-btn" data-stat="speed">Speed</button>
+            <button class="stat-btn" data-stat="strength">Strength</button>
+            <button class="stat-btn" data-stat="cuteness">Cuteness</button>
+            <button class="stat-btn" data-stat="woofFactor">Woof Factor</button>
+        </div>
+        <button id="next-game-btn" style="display: none;">Next Game</button>
+    </div>
+    <script src="doggington-game.js"></script>
+</body>
+</html>

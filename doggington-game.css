@@ -1,0 +1,86 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('images/bgmain.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#main-container {
+    margin: auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 1200px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#doggington-logo {
+    width: 150px;
+    margin: 10px auto;
+}
+
+#score-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.score {
+    margin: 0 20px;
+    font-size: 1.5rem;
+}
+
+#top-trumps-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.card {
+    width: 300px;
+    padding: 20px;
+    background: #222;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 0 10px;
+    text-align: center;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+#button-container {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #ff9800;
+    color: #111;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 10px;
+}
+
+button:hover {
+    background-color: #ffa726;
+}
+
+#next-game-btn {
+    display: none;
+}
