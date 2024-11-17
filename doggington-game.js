@@ -3,6 +3,10 @@ let totalRounds = 0;
 let currentRound = 0;
 let selectedCards = null;
 let selectedWager = null;
+let waitingForNextRound = false; // Tracks if we are in the delay period between rounds
+let walletAddress = ""; // Wallet address placeholder
+let doggingtonBalance = 10000; // Starting balance for testing
+
 
 // Cards Data
 const cards = [
@@ -28,7 +32,7 @@ const cards = [
     { name: "Pepper", breed: "Schnauzer", stats: { speed: 7, strength: 6, cuteness: 8, woofFactor: 7 }, img: "images/PEPPER.png" }
 ];
 
-// DOM Elements
+// DOM Elements (unchanged)
 const p1CardPic = document.getElementById("p1-card-pic");
 const p2CardPic = document.getElementById("p2-card-pic");
 const p1ScoreDisplay = document.getElementById("p1-score");
@@ -36,7 +40,13 @@ const p2ScoreDisplay = document.getElementById("p2-score");
 const statButtons = document.querySelectorAll(".stat-btn");
 const gameModeButtons = document.querySelectorAll(".game-mode-btn");
 const wagerButtons = document.querySelectorAll(".wager-btn");
-const roundDisplay = document.createElement('div'); // Create element to show round count
+const roundDisplay = document.createElement('div');
+const mainContainer = document.getElementById("main-container");
+const topBar = document.getElementById("top-bar");
+const walletAddressDisplay = document.getElementById("wallet-address");
+const doggingtonBalanceDisplay = document.getElementById("doggington-balance");
+const logoutBtn = document.getElementById("logout-btn");
+const proceedBtn = document.getElementById("proceed-btn");
 
 let p1Score = 0;
 let p2Score = 0;
@@ -49,29 +59,71 @@ roundDisplay.id = 'round-display';
 roundDisplay.style.fontSize = '1.5rem';
 scoreContainer.appendChild(roundDisplay);
 
-// Landing Screen Logic
+// Landing Screen Logic (unchanged)
 document.getElementById("connect-wallet-btn").addEventListener("click", () => {
+    walletAddress = "0xABCD...1234"; // Placeholder wallet address
+    walletAddressDisplay.textContent = walletAddress;
+    doggingtonBalanceDisplay.textContent = doggingtonBalance;
+
+    // Show top bar
+    topBar.style.display = "flex";
+
+    // Proceed to game setup screen
     document.getElementById("landing-screen").style.display = "none";
     document.getElementById("game-setup-screen").style.display = "block";
+    updateWagerOptions(); // Update available wagers based on balance
 });
 
-// Game Setup Logic
+// Log Out Button Logic (unchanged)
+logoutBtn.addEventListener("click", () => {
+    document.getElementById("main-container").style.display = "none";
+    document.getElementById("game-setup-screen").style.display = "none";
+    topBar.style.display = "none";
+
+    // Show landing screen again
+    document.getElementById("landing-screen").style.display = "block";
+
+    // Reset wallet info
+    walletAddress = "";
+    walletAddressDisplay.textContent = "";
+    doggingtonBalance = 10000; // Reset balance for testing
+    doggingtonBalanceDisplay.textContent = doggingtonBalance;
+});
+
+// Game Setup Logic (unchanged)
 gameModeButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         selectedCards = parseInt(btn.dataset.cards);
         document.getElementById("wager-selection").style.display = "block";
+        updateWagerOptions(); // Re-check wager options
     });
 });
+
+// Update Wager Options Based on Balance (unchanged)
+function updateWagerOptions() {
+    wagerButtons.forEach(btn => {
+        const wagerAmount = parseInt(btn.dataset.wager);
+        if (wagerAmount > doggingtonBalance) {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+        } else {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        }
+    });
+}
 
 wagerButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         selectedWager = parseInt(btn.dataset.wager);
-        document.getElementById("proceed-btn").style.display = "block";
+        proceedBtn.style.display = "block";
     });
 });
 
-// Proceed to Main Game Logic
-document.getElementById("proceed-btn").addEventListener("click", () => {
+// Proceed to Main Game Logic (unchanged)
+proceedBtn.addEventListener("click", () => {
     if (selectedCards && selectedWager) {
         totalRounds = selectedCards; // Set total rounds based on selected cards (5 or 10)
         currentRound = 1; // Start from round 1
@@ -98,19 +150,20 @@ document.getElementById("proceed-btn").addEventListener("click", () => {
     }
 });
 
-// Function to Shuffle Deck
+// Function to Shuffle Deck (unchanged)
 function shuffleDeck() {
     const shuffled = [...cards].sort(() => Math.random() - 0.5);
     p1Deck = shuffled.slice(0, shuffled.length / 2);
     p2Deck = shuffled.slice(shuffled.length / 2);
 }
 
-// Function to Display Cards
+// Function to Display Cards (unchanged)
 function displayCards() {
     const p1Card = p1Deck[0];
     p1CardPic.src = p1Card.img;
     p2CardPic.src = "images/backer.png";
     enableStatButtons(); // Ensure stat buttons are enabled for the round
+    waitingForNextRound = false; // Not waiting for the next round yet
 }
 
 // Function to Compare Selected Stat
@@ -140,7 +193,6 @@ function compareStat(stat) {
         }
 
         updateScores();
-
         // Remove the flip class after animation completes
         p2CardElement.classList.remove("flip");
 
@@ -150,25 +202,49 @@ function compareStat(stat) {
         } else {
             currentRound++; // Increment the round counter
             roundDisplay.textContent = `Round: ${currentRound} / ${totalRounds}`;
-            
-            // Display the next round of cards automatically after a brief delay
-            setTimeout(() => {
-                p1Deck.push(p1Deck.shift());
-                p2Deck.push(p2Deck.shift());
-                displayCards();
-            }, 1000); // Delay before starting the next round
+
+            // Wait 5 seconds before starting the next round or skip if clicked/pressed
+            waitingForNextRound = true; // Set waiting state
+            const nextRoundTimeout = setTimeout(() => {
+                proceedToNextRound();
+            }, 5000); // 5-second delay
+
+            // Allow the player to skip the delay
+            function skipDelay() {
+                if (waitingForNextRound) {
+                    clearTimeout(nextRoundTimeout); // Cancel the existing timeout
+                    proceedToNextRound(); // Proceed to the next round immediately
+                }
+            }
+
+            // Event listeners for skipping the delay
+            mainContainer.addEventListener("click", skipDelay, { once: true });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === " " || e.key === "Enter") {
+                    skipDelay();
+                }
+            }, { once: true });
         }
 
     }, 500); // Halfway through the flip animation (adjust if necessary)
 }
 
-// Function to Update Scores
+// Function to Proceed to the Next Round
+function proceedToNextRound() {
+    waitingForNextRound = false; // Reset waiting state
+    p1Deck.push(p1Deck.shift());
+    p2Deck.push(p2Deck.shift());
+    displayCards();
+    enableStatButtons(); // Re-enable stat buttons for the new round
+}
+
+// Function to Update Scores (unchanged)
 function updateScores() {
     p1ScoreDisplay.textContent = `Player One Score: ${p1Score}`;
     p2ScoreDisplay.textContent = `CPU Score: ${p2Score}`;
 }
 
-// Function to Disable Stat Buttons
+// Function to Disable Stat Buttons (unchanged)
 function disableStatButtons() {
     statButtons.forEach(btn => btn.disabled = true);
 }
@@ -183,14 +259,27 @@ statButtons.forEach(btn => {
     btn.addEventListener("click", () => compareStat(btn.dataset.stat));
 });
 
-// Display Winner Overlay Function
+// Display Winner Overlay Function (modified to handle wager at the end)
 function displayWinnerOverlay() {
     // Determine the winner
-    const winner = p1Score > p2Score ? "Player One Wins!" : "CPU Wins!";
+    let winner;
+    if (p1Score > p2Score) {
+        winner = "Player One Wins!";
+        doggingtonBalance += selectedWager; // Player wins the wager
+    } else if (p1Score < p2Score) {
+        winner = "CPU Wins!";
+        doggingtonBalance -= selectedWager; // Player loses the wager
+    } else {
+        winner = "It's a Draw!"; // No change in balance for a draw
+    }
+
+    // Update the balance display
+    doggingtonBalanceDisplay.textContent = doggingtonBalance;
+
+    // Display the winner
     const overlay = document.getElementById("game-over-overlay");
     const winnerText = document.getElementById("winner-text");
 
-    // Set the overlay text
     winnerText.textContent = winner;
 
     // Show the overlay
@@ -213,9 +302,8 @@ function displayWinnerOverlay() {
     });
 }
 
-// Function to Reset Game Setup
+// Function to Reset Game Setup (unchanged)
 function resetGameSetup() {
-    // Reset game setup options
     selectedCards = null;
     selectedWager = null;
 
@@ -224,6 +312,6 @@ function resetGameSetup() {
     document.getElementById("proceed-btn").style.display = "none";
 }
 
-// Initial Game Setup
+// Initial Game Setup (unchanged)
 shuffleDeck();
 displayCards();

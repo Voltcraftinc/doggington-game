@@ -212,3 +212,47 @@ button:hover {
 #connect-wallet-btn:hover, .game-mode-btn:hover, .wager-btn:hover, #proceed-btn:hover {
     background-color: #ffa726;
 }
+
+
+
+/* Top Bar Styles */
+#top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 40px; /* Thin bar */
+    background-color: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 1rem;
+    z-index: 10; /* Ensure it stays above everything else */
+}
+
+#wallet-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#doggington-logo {
+    width: 20px;
+    height: 20px;
+}
+
+#logout-btn {
+    background-color: #ff9800;
+    color: #111;
+    border: none;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#logout-btn:hover {
+    background-color: #ffa726;
+}
