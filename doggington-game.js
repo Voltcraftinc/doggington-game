@@ -52,20 +52,32 @@ function compareStat(stat) {
     const p1Stat = p1Card.stats[stat];
     const p2Stat = p2Card.stats[stat];
 
-    p2CardPic.src = p2Card.img;
+    // Add the flip animation to the CPU card
+    const p2CardElement = document.getElementById("p2-card");
+    p2CardElement.classList.add("flip");
 
-    if (p1Stat > p2Stat) {
-        p1Score++;
-        p1Deck.push(p2Deck.shift());
-    } else if (p1Stat < p2Stat) {
-        p2Score++;
-        p2Deck.push(p1Deck.shift());
-    }
+    // After the animation ends, reveal the CPU card's image
+    setTimeout(() => {
+        p2CardPic.src = p2Card.img;
 
-    updateScores();
-    nextGameBtn.style.display = "block";
-    disableStatButtons();
+        if (p1Stat > p2Stat) {
+            p1Score++;
+            p1Deck.push(p2Deck.shift());
+        } else if (p1Stat < p2Stat) {
+            p2Score++;
+            p2Deck.push(p1Deck.shift());
+        }
+
+        updateScores();
+        nextGameBtn.style.display = "block";
+        disableStatButtons();
+
+        // Remove the flip class after animation completes
+        p2CardElement.classList.remove("flip");
+
+    }, 500); // Halfway through the flip animation (adjust if necessary)
 }
+
 
 function updateScores() {
     p1ScoreDisplay.textContent = `Player One Score: ${p1Score}`;
