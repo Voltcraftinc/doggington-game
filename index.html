@@ -4,12 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="doggington-game.css">
-    <title>Doggington Top Trumps</title>
+    <title>Bark Royale - Doggington</title>
 </head>
 <body>
-    <div id="main-container">
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="screen">
+        <img id="landing-logo" src="images/doggington-bark-royale.png" alt="Doggington Logo">
+        <button id="connect-wallet-btn">Connect Wallet to Play</button>
+    </div>
+
+    <!-- Game Setup Screen -->
+    <div id="game-setup-screen" class="screen" style="display: none;">
+        <h2>Select Game Options</h2>
+        <div id="card-selection">
+            <button class="game-mode-btn" data-cards="5">5 Card Game</button>
+            <button class="game-mode-btn" data-cards="10">10 Card Game</button>
+        </div>
+        <div id="wager-selection" style="display: none;">
+            <h3>Select Wager</h3>
+            <div class="wager-options">
+                <button class="wager-btn" data-wager="10">10</button>
+                <button class="wager-btn" data-wager="100">100</button>
+                <button class="wager-btn" data-wager="1000">1,000</button>
+                <button class="wager-btn" data-wager="10000">10,000</button>
+                <button class="wager-btn" data-wager="100000">100,000</button>
+                <button class="wager-btn" data-wager="1000000">1,000,000</button>
+            </div>
+        </div>
+        <button id="proceed-btn" style="display: none;">Proceed</button>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="main-container" style="display: none;">
         <!-- Logo -->
-        <img id="doggington-logo" src="images/doggingtonlogo.png" alt="Doggington Logo">
+        <img id="doggington-logo" src="images/doggington-bark-royale.png" alt="Doggington Logo">
+
+        <!-- Game Information (Deck & Wager) -->
+        <div id="game-info-container">
+            <div class="game-info" id="deck-info">Deck: N/A</div>
+            <div class="game-info" id="wager-info">Wager: N/A</div>
+        </div>
 
         <!-- Score Display -->
         <div id="score-container">
@@ -38,6 +72,16 @@
         </div>
         <button id="next-game-btn" style="display: none;">Next Game</button>
     </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="screen overlay" style="display: none;">
+        <div id="winner-container">
+            <h1 id="winner-text">Player One Wins!</h1>
+            <button id="play-again-btn">Play Again</button>
+            <button id="exit-btn">Exit</button>
+        </div>
+    </div>
+
     <script src="doggington-game.js"></script>
 </body>
 </html>

@@ -19,8 +19,20 @@ body {
 }
 
 #doggington-logo {
-    width: 150px;
+    width: 800px;
     margin: 10px auto;
+}
+
+/* Game Info Container */
+#game-info-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.game-info {
+    margin: 0 20px;
+    font-size: 1.5rem;
 }
 
 #score-container {
@@ -85,7 +97,6 @@ button:hover {
     display: none;
 }
 
-
 /* Card Flip Animation */
 @keyframes cardFlip {
     0% {
@@ -101,4 +112,103 @@ button:hover {
 
 .card.flip {
     animation: cardFlip 1s forwards;
+}
+
+/* Game Over Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1000;
+}
+
+#winner-container {
+    color: #fff;
+    padding: 40px;
+    background: rgba(34, 34, 34, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    animation: zoom-in 1s ease-out forwards;
+}
+
+#winner-text {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+#play-again-btn, #exit-btn {
+    background-color: #ff9800;
+    color: #111;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+#play-again-btn:hover, #exit-btn:hover {
+    background-color: #ffa726;
+}
+
+@keyframes zoom-in {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fade-in {
+    animation: fade-in-overlay 1s ease-in forwards;
+}
+
+@keyframes fade-in-overlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Landing and Setup Screens */
+.screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url('images/Gameloadbg.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+#landing-logo {
+    width: 600px;
+    margin-bottom: 40px;
+}
+
+#connect-wallet-btn, .game-mode-btn, .wager-btn, #proceed-btn {
+    background-color: #ff9800;
+    color: #111;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+#connect-wallet-btn:hover, .game-mode-btn:hover, .wager-btn:hover, #proceed-btn:hover {
+    background-color: #ffa726;
 }
