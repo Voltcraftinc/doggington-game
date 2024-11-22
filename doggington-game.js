@@ -32,7 +32,22 @@ const cards = [
     { name: "Pepper", breed: "Schnauzer", stats: { speed: 7, strength: 6, cuteness: 8, woofFactor: 7 }, img: "images/PEPPER.png" }
 ];
 
-// DOM Elements (unchanged)
+// Configure Wallet Adapters
+let selectedWalletAdapter = null;
+let wallets = {};
+
+window.addEventListener('DOMContentLoaded', () => {
+    // Initialize wallet adapters after the page loads
+    const { PhantomWalletAdapter, SolflareWalletAdapter, GlowWalletAdapter } = solanaWalletAdapterWallets;
+
+    wallets = {
+        Phantom: new PhantomWalletAdapter(),
+        Solflare: new SolflareWalletAdapter(),
+        Glow: new GlowWalletAdapter(),
+    };
+});
+
+// DOM Elements
 const p1CardPic = document.getElementById("p1-card-pic");
 const p2CardPic = document.getElementById("p2-card-pic");
 const p1ScoreDisplay = document.getElementById("p1-score");
@@ -59,23 +74,42 @@ roundDisplay.id = 'round-display';
 roundDisplay.style.fontSize = '1.5rem';
 scoreContainer.appendChild(roundDisplay);
 
-// Landing Screen Logic (unchanged)
-document.getElementById("connect-wallet-btn").addEventListener("click", () => {
-    walletAddress = "0xABCD...1234"; // Placeholder wallet address
-    walletAddressDisplay.textContent = walletAddress;
-    doggingtonBalanceDisplay.textContent = doggingtonBalance;
+// Landing Screen Logic (updated to connect wallet)
+document.getElementById("connect-wallet-btn").addEventListener("click", async () => {
+    try {
+        // Prompt user to select a wallet
+        const walletOptions = Object.keys(wallets);
+        const selectedWallet = prompt(`Select a wallet to connect: ${walletOptions.join(", ")}`, "Phantom");
 
-    // Show top bar
-    topBar.style.display = "flex";
+        if (!walletOptions.includes(selectedWallet)) {
+            alert("Invalid wallet selection. Please try again.");
+            return;
+        }
 
-    // Proceed to game setup screen
-    document.getElementById("landing-screen").style.display = "none";
-    document.getElementById("game-setup-screen").style.display = "block";
-    updateWagerOptions(); // Update available wagers based on balance
+        // Configure selected wallet adapter
+        selectedWalletAdapter = wallets[selectedWallet];
+        await selectedWalletAdapter.connect();
+
+        if (selectedWalletAdapter.connected) {
+            walletAddress = selectedWalletAdapter.publicKey.toString();
+            walletAddressDisplay.textContent = walletAddress;
+            doggingtonBalanceDisplay.textContent = doggingtonBalance;
+
+            // Show top bar and proceed to the game setup screen
+            topBar.style.display = "flex";
+            document.getElementById("landing-screen").style.display = "none";
+            document.getElementById("game-setup-screen").style.display = "block";
+            updateWagerOptions(); // Update available wagers based on balance
+        }
+    } catch (error) {
+        console.error("Failed to connect wallet:", error);
+        alert("Failed to connect wallet. Please try again.");
+    }
 });
 
 // Log Out Button Logic (unchanged)
 logoutBtn.addEventListener("click", () => {
+    // Reset and hide wallet information
     document.getElementById("main-container").style.display = "none";
     document.getElementById("game-setup-screen").style.display = "none";
     topBar.style.display = "none";
@@ -88,6 +122,7 @@ logoutBtn.addEventListener("click", () => {
     walletAddressDisplay.textContent = "";
     doggingtonBalance = 10000; // Reset balance for testing
     doggingtonBalanceDisplay.textContent = doggingtonBalance;
+    selectedWalletAdapter = null; // Clear selected wallet adapter
 });
 
 // Game Setup Logic (unchanged)

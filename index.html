@@ -1,25 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="doggington-game.css">
     <title>Bark Royale - Doggington</title>
+
+    <!-- Include Solana Web3.js and Wallet Adapter scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@latest/dist/index.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@latest/dist/index.umd.min.js"></script>
 </head>
+
 <body>
-        <!-- Top Bar -->
-        <div id="top-bar" style="display: none;">
-            <div id="wallet-info">
-                User: <span id="wallet-address"></span>
-                <img id="doggington-logo" src="images/doggingtonlogo.png" alt="Doggington Logo">
-                <span id="doggington-balance">0</span>
-            </div>
-            <button id="logout-btn">Log Out</button>
+    <!-- Top Bar -->
+    <div id="top-bar" style="display: none;">
+        <div id="wallet-info">
+            User: <span id="wallet-address"></span>
+            <img id="doggington-logo" src="images/doggingtonlogo.png" alt="Doggington Logo">
+            <span id="doggington-balance">0</span>
         </div>
+        <button id="logout-btn">Log Out</button>
+    </div>
+
     <!-- Landing Screen -->
     <div id="landing-screen" class="screen">
         <img id="landing-logo" src="images/doggington-bark-royale.png" alt="Doggington Logo">
         <button id="connect-wallet-btn">Connect Wallet to Play</button>
+    </div>
+
+    <!-- Custom Wallet Selection Modal -->
+    <div id="wallet-selection-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Select a Wallet to Connect</h2>
+            <button class="wallet-option-btn" data-wallet="Phantom">Phantom Wallet</button>
+            <button class="wallet-option-btn" data-wallet="Solflare">Solflare Wallet</button>
+            <button class="wallet-option-btn" data-wallet="Glow">Glow Wallet</button>
+            <button id="wallet-cancel-btn">Cancel</button>
+        </div>
     </div>
 
     <!-- Game Setup Screen -->
@@ -91,6 +110,54 @@
         </div>
     </div>
 
+    <!-- Your Game JavaScript -->
     <script src="doggington-game.js"></script>
+    <script>
+        // Landing Screen Logic to Show Wallet Selection Modal
+        document.getElementById("connect-wallet-btn").addEventListener("click", () => {
+            document.getElementById("wallet-selection-modal").style.display = "flex";
+        });
+
+        // Wallet Selection Modal Logic
+        document.querySelectorAll(".wallet-option-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const walletType = btn.dataset.wallet;
+
+                // Initialize wallet adapters
+                const wallets = {
+                    Phantom: new solanaWalletAdapter.Wallets.PhantomWalletAdapter(),
+                    Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
+                    Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
+                };
+
+                try {
+                    // Connect to selected wallet
+                    const walletAdapter = wallets[walletType];
+                    await walletAdapter.connect();
+
+                    if (walletAdapter.connected) {
+                        const walletAddress = walletAdapter.publicKey.toString();
+                        document.getElementById("wallet-address").textContent = walletAddress;
+                        document.getElementById("doggington-balance").textContent = 10000;
+
+                        // Hide wallet modal and show the game setup screen
+                        document.getElementById("top-bar").style.display = "flex";
+                        document.getElementById("wallet-selection-modal").style.display = "none";
+                        document.getElementById("landing-screen").style.display = "none";
+                        document.getElementById("game-setup-screen").style.display = "block";
+                    }
+                } catch (error) {
+                    console.error("Wallet connection failed:", error);
+                    alert("Could not connect wallet. Please try again.");
+                }
+            });
+        });
+
+        // Cancel Button in Wallet Selection Modal
+        document.getElementById("wallet-cancel-btn").addEventListener("click", () => {
+            document.getElementById("wallet-selection-modal").style.display = "none";
+        });
+    </script>
 </body>
+
 </html>
