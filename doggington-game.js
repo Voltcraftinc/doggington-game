@@ -86,22 +86,26 @@ document.getElementById("connect-wallet-btn").addEventListener("click", async ()
         walletModal.style.backgroundColor = '#fff';
         walletModal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
         walletModal.style.zIndex = '1000';
+        walletModal.style.textAlign = 'center';
 
         const walletTitle = document.createElement('h3');
         walletTitle.textContent = 'Select a Wallet to Connect';
+        walletTitle.style.marginBottom = '15px';
         walletModal.appendChild(walletTitle);
 
         Object.keys(wallets).forEach(walletName => {
             const walletButton = document.createElement('button');
             walletButton.textContent = walletName + ' Wallet';
-            walletButton.style.display = 'block';
+            walletButton.className = 'wallet-button';
             walletButton.style.margin = '10px 0';
             walletButton.style.padding = '10px';
+            walletButton.style.width = '80%';
             walletButton.style.backgroundColor = '#ff9800';
-            walletButton.style.color = '#111';
+            walletButton.style.color = '#fff';
             walletButton.style.border = 'none';
             walletButton.style.cursor = 'pointer';
             walletButton.style.fontSize = '1rem';
+            walletButton.style.borderRadius = '5px';
 
             walletButton.addEventListener('click', async () => {
                 try {
@@ -131,14 +135,16 @@ document.getElementById("connect-wallet-btn").addEventListener("click", async ()
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
-        cancelButton.style.display = 'block';
-        cancelButton.style.margin = '10px 0';
+        cancelButton.className = 'wallet-button-cancel';
+        cancelButton.style.margin = '15px 0';
         cancelButton.style.padding = '10px';
+        cancelButton.style.width = '80%';
         cancelButton.style.backgroundColor = '#ff4444';
         cancelButton.style.color = '#fff';
         cancelButton.style.border = 'none';
         cancelButton.style.cursor = 'pointer';
         cancelButton.style.fontSize = '1rem';
+        cancelButton.style.borderRadius = '5px';
         cancelButton.addEventListener('click', () => {
             document.body.removeChild(walletModal);
         });

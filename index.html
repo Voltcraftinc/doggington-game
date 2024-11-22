@@ -29,17 +29,6 @@
         <button id="connect-wallet-btn">Connect Wallet to Play</button>
     </div>
 
-    <!-- Wallet Selection Modal -->
-    <div id="wallet-selection-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3>Select a Wallet to Connect</h3>
-            <button class="wallet-option" id="phantom-wallet-btn">Phantom Wallet</button>
-            <button class="wallet-option" id="solflare-wallet-btn">Solflare Wallet</button>
-            <button class="wallet-option" id="glow-wallet-btn">Glow Wallet</button>
-            <button class="cancel-btn" id="cancel-wallet-btn">Cancel</button>
-        </div>
-    </div>
-
     <!-- Game Setup Screen -->
     <div id="game-setup-screen" class="screen" style="display: none;">
         <h2>Select Game Options</h2>
@@ -111,52 +100,6 @@
 
     <!-- Your Game JavaScript -->
     <script src="doggington-game.js"></script>
-    <script>
-        // Landing Screen Logic to Show Wallet Selection Modal
-        document.getElementById("connect-wallet-btn").addEventListener("click", () => {
-            document.getElementById("wallet-selection-modal").style.display = "flex";
-        });
-
-        // Wallet Selection Modal Logic
-        document.querySelectorAll(".wallet-option-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const walletType = btn.dataset.wallet;
-
-                // Initialize wallet adapters
-                const wallets = {
-                    Phantom: new solanaWalletAdapter.Wallets.PhantomWalletAdapter(),
-                    Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
-                    Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
-                };
-
-                try {
-                    // Connect to selected wallet
-                    const walletAdapter = wallets[walletType];
-                    await walletAdapter.connect();
-
-                    if (walletAdapter.connected) {
-                        const walletAddress = walletAdapter.publicKey.toString();
-                        document.getElementById("wallet-address").textContent = walletAddress;
-                        document.getElementById("doggington-balance").textContent = 10000;
-
-                        // Hide wallet modal and show the game setup screen
-                        document.getElementById("top-bar").style.display = "flex";
-                        document.getElementById("wallet-selection-modal").style.display = "none";
-                        document.getElementById("landing-screen").style.display = "none";
-                        document.getElementById("game-setup-screen").style.display = "block";
-                    }
-                } catch (error) {
-                    console.error("Wallet connection failed:", error);
-                    alert("Could not connect wallet. Please try again.");
-                }
-            });
-        });
-
-        // Cancel Button in Wallet Selection Modal
-        document.getElementById("wallet-cancel-btn").addEventListener("click", () => {
-            document.getElementById("wallet-selection-modal").style.display = "none";
-        });
-    </script>
 </body>
 
 </html>
