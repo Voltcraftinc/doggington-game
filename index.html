@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="doggington-game.css">
     <title>Bark Royale - Doggington</title>
-
     <!-- Include Solana Web3.js and Wallet Adapter scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@latest/dist/index.umd.min.js"></script>
@@ -30,14 +29,14 @@
         <button id="connect-wallet-btn">Connect Wallet to Play</button>
     </div>
 
-    <!-- Custom Wallet Selection Modal -->
+    <!-- Wallet Selection Modal -->
     <div id="wallet-selection-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <h2>Select a Wallet to Connect</h2>
-            <button class="wallet-option-btn" data-wallet="Phantom">Phantom Wallet</button>
-            <button class="wallet-option-btn" data-wallet="Solflare">Solflare Wallet</button>
-            <button class="wallet-option-btn" data-wallet="Glow">Glow Wallet</button>
-            <button id="wallet-cancel-btn">Cancel</button>
+            <h3>Select a Wallet to Connect</h3>
+            <button class="wallet-option" id="phantom-wallet-btn">Phantom Wallet</button>
+            <button class="wallet-option" id="solflare-wallet-btn">Solflare Wallet</button>
+            <button class="wallet-option" id="glow-wallet-btn">Glow Wallet</button>
+            <button class="cancel-btn" id="cancel-wallet-btn">Cancel</button>
         </div>
     </div>
 
