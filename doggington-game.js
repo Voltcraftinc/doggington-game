@@ -72,69 +72,49 @@ roundDisplay.id = 'round-display';
 roundDisplay.style.fontSize = '1.5rem';
 scoreContainer.appendChild(roundDisplay);
 
-// Landing Screen Logic (updated to connect wallet)
-document.getElementById("connect-wallet-btn").addEventListener("click", async () => {
-    try {
-        // Create a wallet selection modal instead of using prompt
-        const walletModal = document.createElement('div');
-        walletModal.id = 'wallet-selection-modal';
-        walletModal.className = 'modal';
-
-        const walletContent = document.createElement('div');
-        walletContent.className = 'modal-content';
-
-        const walletTitle = document.createElement('h3');
-        walletTitle.textContent = 'Select a Wallet to Connect';
-        walletTitle.style.marginBottom = '15px';
-        walletContent.appendChild(walletTitle);
-
-        Object.keys(wallets).forEach(walletName => {
-            const walletButton = document.createElement('button');
-            walletButton.textContent = walletName + ' Wallet';
-            walletButton.className = 'wallet-button';
-            walletButton.addEventListener('click', async () => {
-                try {
-                    selectedWalletAdapter = wallets[walletName];
-                    await selectedWalletAdapter.connect();
-
-                    if (selectedWalletAdapter.connected) {
-                        walletAddress = selectedWalletAdapter.publicKey.toString();
-                        walletAddressDisplay.textContent = walletAddress;
-                        doggingtonBalanceDisplay.textContent = doggingtonBalance;
-
-                        // Show top bar and proceed to the game setup screen
-                        topBar.style.display = "flex";
-                        document.getElementById("landing-screen").style.display = "none";
-                        document.getElementById("game-setup-screen").style.display = "block";
-                        updateWagerOptions(); // Update available wagers based on balance
-                    }
-                } catch (error) {
-                    console.error("Failed to connect wallet:", error);
-                    alert("Failed to connect wallet. Please try again.");
-                }
-                document.body.removeChild(walletModal);
-            });
-
-            walletContent.appendChild(walletButton);
-        });
-
-        const cancelButton = document.createElement('button');
-        cancelButton.textContent = 'Cancel';
-        cancelButton.className = 'wallet-button-cancel';
-        cancelButton.addEventListener('click', () => {
-            document.body.removeChild(walletModal);
-        });
-        walletContent.appendChild(cancelButton);
-
-        walletModal.appendChild(walletContent);
-        document.body.appendChild(walletModal);
-    } catch (error) {
-        console.error("Failed to connect wallet:", error);
-        alert("Failed to connect wallet. Please try again.");
-    }
+// Landing Screen Logic to Show Wallet Selection Modal
+document.getElementById("connect-wallet-btn").addEventListener("click", () => {
+    document.getElementById("wallet-selection-modal").style.display = "flex";
 });
 
-// Log Out Button Logic (unchanged)
+// Wallet Selection Modal Logic
+document.getElementById("phantom-wallet-btn").addEventListener("click", async () => {
+    await connectWallet('Phantom');
+});
+document.getElementById("solflare-wallet-btn").addEventListener("click", async () => {
+    await connectWallet('Solflare');
+});
+document.getElementById("glow-wallet-btn").addEventListener("click", async () => {
+    await connectWallet('Glow');
+});
+
+document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
+    document.getElementById("wallet-selection-modal").style.display = "none";
+});
+
+async function connectWallet(walletName) {
+    try {
+        selectedWalletAdapter = wallets[walletName];
+        await selectedWalletAdapter.connect();
+
+        if (selectedWalletAdapter.connected) {
+            walletAddress = selectedWalletAdapter.publicKey.toString();
+            walletAddressDisplay.textContent = walletAddress;
+            doggingtonBalanceDisplay.textContent = doggingtonBalance;
+
+            // Hide wallet modal and show the game setup screen
+            document.getElementById("top-bar").style.display = "flex";
+            document.getElementById("wallet-selection-modal").style.display = "none";
+            document.getElementById("landing-screen").style.display = "none";
+            document.getElementById("game-setup-screen").style.display = "block";
+        }
+    } catch (error) {
+        console.error("Wallet connection failed:", error);
+        alert("Could not connect wallet. Please try again.");
+    }
+}
+
+// Log Out Button Logic
 logoutBtn.addEventListener("click", () => {
     // Reset and hide wallet information
     document.getElementById("main-container").style.display = "none";
@@ -152,7 +132,7 @@ logoutBtn.addEventListener("click", () => {
     selectedWalletAdapter = null; // Clear selected wallet adapter
 });
 
-// Game Setup Logic (unchanged)
+// Game Setup Logic
 gameModeButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         selectedCards = parseInt(btn.dataset.cards);
@@ -161,7 +141,7 @@ gameModeButtons.forEach(btn => {
     });
 });
 
-// Update Wager Options Based on Balance (unchanged)
+// Update Wager Options Based on Balance
 function updateWagerOptions() {
     wagerButtons.forEach(btn => {
         const wagerAmount = parseInt(btn.dataset.wager);
@@ -184,7 +164,7 @@ wagerButtons.forEach(btn => {
     });
 });
 
-// Proceed to Main Game Logic (unchanged)
+// Proceed to Main Game Logic
 proceedBtn.addEventListener("click", () => {
     if (selectedCards && selectedWager) {
         totalRounds = selectedCards; // Set total rounds based on selected cards (5 or 10)
@@ -212,14 +192,14 @@ proceedBtn.addEventListener("click", () => {
     }
 });
 
-// Function to Shuffle Deck (unchanged)
+// Function to Shuffle Deck
 function shuffleDeck() {
     const shuffled = [...cards].sort(() => Math.random() - 0.5);
     p1Deck = shuffled.slice(0, shuffled.length / 2);
     p2Deck = shuffled.slice(shuffled.length / 2);
 }
 
-// Function to Display Cards (unchanged)
+// Function to Display Cards
 function displayCards() {
     const p1Card = p1Deck[0];
     p1CardPic.src = p1Card.img;
@@ -300,13 +280,13 @@ function proceedToNextRound() {
     enableStatButtons(); // Re-enable stat buttons for the new round
 }
 
-// Function to Update Scores (unchanged)
+// Function to Update Scores
 function updateScores() {
     p1ScoreDisplay.textContent = `Player One Score: ${p1Score}`;
     p2ScoreDisplay.textContent = `CPU Score: ${p2Score}`;
 }
 
-// Function to Disable Stat Buttons (unchanged)
+// Function to Disable Stat Buttons
 function disableStatButtons() {
     statButtons.forEach(btn => btn.disabled = true);
 }
@@ -321,7 +301,7 @@ statButtons.forEach(btn => {
     btn.addEventListener("click", () => compareStat(btn.dataset.stat));
 });
 
-// Display Winner Overlay Function (modified to handle wager at the end)
+// Display Winner Overlay Function
 function displayWinnerOverlay() {
     // Determine the winner
     let winner;
@@ -364,7 +344,7 @@ function displayWinnerOverlay() {
     });
 }
 
-// Function to Reset Game Setup (unchanged)
+// Function to Reset Game Setup
 function resetGameSetup() {
     selectedCards = null;
     selectedWager = null;
@@ -374,6 +354,6 @@ function resetGameSetup() {
     document.getElementById("proceed-btn").style.display = "none";
 }
 
-// Initial Game Setup (unchanged)
+// Initial Game Setup
 shuffleDeck();
 displayCards();

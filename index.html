@@ -111,33 +111,6 @@
 
     <!-- Your Game JavaScript -->
     <script src="doggington-game.js"></script>
-    <script>
-        // Wallet Selection Modal Logic
-        document.getElementById("connect-wallet-btn").addEventListener("click", () => {
-            document.getElementById("wallet-selection-modal").style.display = "flex";
-        });
-
-        document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
-            document.getElementById("wallet-selection-modal").style.display = "none";
-        });
-
-        document.getElementById("phantom-wallet-btn").addEventListener("click", () => {
-            selectWallet('Phantom');
-        });
-
-        document.getElementById("solflare-wallet-btn").addEventListener("click", () => {
-            selectWallet('Solflare');
-        });
-
-        document.getElementById("glow-wallet-btn").addEventListener("click", () => {
-            selectWallet('Glow');
-        });
-
-        function selectWallet(walletType) {
-            document.getElementById("wallet-selection-modal").style.display = "none";
-            // Wallet connection logic is in JS file.
-        }
-    </script>
 </body>
 
 </html>
