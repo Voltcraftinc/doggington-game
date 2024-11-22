@@ -38,12 +38,10 @@ let wallets = {};
 
 window.addEventListener('DOMContentLoaded', () => {
     // Initialize wallet adapters after the page loads
-    const { PhantomWalletAdapter, SolflareWalletAdapter, GlowWalletAdapter } = solanaWalletAdapterWallets;
-
     wallets = {
-        Phantom: new PhantomWalletAdapter(),
-        Solflare: new SolflareWalletAdapter(),
-        Glow: new GlowWalletAdapter(),
+        Phantom: new solanaWalletAdapter.Wallets.PhantomWalletAdapter(),
+        Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
+        Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
     };
 });
 
@@ -77,30 +75,76 @@ scoreContainer.appendChild(roundDisplay);
 // Landing Screen Logic (updated to connect wallet)
 document.getElementById("connect-wallet-btn").addEventListener("click", async () => {
     try {
-        // Prompt user to select a wallet
-        const walletOptions = Object.keys(wallets);
-        const selectedWallet = prompt(`Select a wallet to connect: ${walletOptions.join(", ")}`, "Phantom");
+        // Create a wallet selection modal instead of using prompt
+        const walletModal = document.createElement('div');
+        walletModal.id = 'wallet-selection-modal';
+        walletModal.style.position = 'fixed';
+        walletModal.style.top = '50%';
+        walletModal.style.left = '50%';
+        walletModal.style.transform = 'translate(-50%, -50%)';
+        walletModal.style.padding = '20px';
+        walletModal.style.backgroundColor = '#fff';
+        walletModal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+        walletModal.style.zIndex = '1000';
 
-        if (!walletOptions.includes(selectedWallet)) {
-            alert("Invalid wallet selection. Please try again.");
-            return;
-        }
+        const walletTitle = document.createElement('h3');
+        walletTitle.textContent = 'Select a Wallet to Connect';
+        walletModal.appendChild(walletTitle);
 
-        // Configure selected wallet adapter
-        selectedWalletAdapter = wallets[selectedWallet];
-        await selectedWalletAdapter.connect();
+        Object.keys(wallets).forEach(walletName => {
+            const walletButton = document.createElement('button');
+            walletButton.textContent = walletName + ' Wallet';
+            walletButton.style.display = 'block';
+            walletButton.style.margin = '10px 0';
+            walletButton.style.padding = '10px';
+            walletButton.style.backgroundColor = '#ff9800';
+            walletButton.style.color = '#111';
+            walletButton.style.border = 'none';
+            walletButton.style.cursor = 'pointer';
+            walletButton.style.fontSize = '1rem';
 
-        if (selectedWalletAdapter.connected) {
-            walletAddress = selectedWalletAdapter.publicKey.toString();
-            walletAddressDisplay.textContent = walletAddress;
-            doggingtonBalanceDisplay.textContent = doggingtonBalance;
+            walletButton.addEventListener('click', async () => {
+                try {
+                    selectedWalletAdapter = wallets[walletName];
+                    await selectedWalletAdapter.connect();
 
-            // Show top bar and proceed to the game setup screen
-            topBar.style.display = "flex";
-            document.getElementById("landing-screen").style.display = "none";
-            document.getElementById("game-setup-screen").style.display = "block";
-            updateWagerOptions(); // Update available wagers based on balance
-        }
+                    if (selectedWalletAdapter.connected) {
+                        walletAddress = selectedWalletAdapter.publicKey.toString();
+                        walletAddressDisplay.textContent = walletAddress;
+                        doggingtonBalanceDisplay.textContent = doggingtonBalance;
+
+                        // Show top bar and proceed to the game setup screen
+                        topBar.style.display = "flex";
+                        document.getElementById("landing-screen").style.display = "none";
+                        document.getElementById("game-setup-screen").style.display = "block";
+                        updateWagerOptions(); // Update available wagers based on balance
+                    }
+                } catch (error) {
+                    console.error("Failed to connect wallet:", error);
+                    alert("Failed to connect wallet. Please try again.");
+                }
+                document.body.removeChild(walletModal);
+            });
+
+            walletModal.appendChild(walletButton);
+        });
+
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.style.display = 'block';
+        cancelButton.style.margin = '10px 0';
+        cancelButton.style.padding = '10px';
+        cancelButton.style.backgroundColor = '#ff4444';
+        cancelButton.style.color = '#fff';
+        cancelButton.style.border = 'none';
+        cancelButton.style.cursor = 'pointer';
+        cancelButton.style.fontSize = '1rem';
+        cancelButton.addEventListener('click', () => {
+            document.body.removeChild(walletModal);
+        });
+        walletModal.appendChild(cancelButton);
+
+        document.body.appendChild(walletModal);
     } catch (error) {
         console.error("Failed to connect wallet:", error);
         alert("Failed to connect wallet. Please try again.");
