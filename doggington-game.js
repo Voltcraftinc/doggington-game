@@ -38,15 +38,16 @@ let wallets = {};
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         // Initialize wallet adapters after the page loads
-        wallets = {
-            Phantom: window.solana && window.solana.isPhantom ? window.solana : null,
-            Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
-            Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
-        };
-        
-        if (!wallets.Phantom) {
+        if (window.solana && window.solana.isPhantom) {
+            wallets.Phantom = window.solana;
+            console.log("Phantom Wallet available");
+        } else {
             console.warn("Phantom Wallet is not available.");
         }
+        
+        // Add other wallets if necessary
+        wallets.Solflare = new solanaWalletAdapter.Wallets.SolflareWalletAdapter();
+        wallets.Glow = new solanaWalletAdapter.Wallets.GlowWalletAdapter();
     } catch (error) {
         console.error("Error initializing wallets: ", error);
     }
