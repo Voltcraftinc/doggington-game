@@ -94,13 +94,22 @@ document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
 
 async function connectWallet(walletName) {
     try {
+        // Check if the wallet extension is installed in the browser
         if (!wallets[walletName]) {
             console.error("Wallet adapter not found for", walletName);
             alert("Wallet adapter not found. Please make sure the extension is installed.");
             return;
         }
-        
+
         selectedWalletAdapter = wallets[walletName];
+        
+        // Ensure the wallet is ready before attempting to connect
+        if (!selectedWalletAdapter.ready) {
+            console.error(`The ${walletName} wallet is not ready.`);
+            alert(`The ${walletName} wallet is not ready. Please ensure the extension is installed and try again.`);
+            return;
+        }
+
         await selectedWalletAdapter.connect();
 
         if (selectedWalletAdapter.connected) {
