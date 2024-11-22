@@ -94,6 +94,12 @@ document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
 
 async function connectWallet(walletName) {
     try {
+        if (!wallets[walletName]) {
+            console.error("Wallet adapter not found for", walletName);
+            alert("Wallet adapter not found. Please make sure the extension is installed.");
+            return;
+        }
+        
         selectedWalletAdapter = wallets[walletName];
         await selectedWalletAdapter.connect();
 
@@ -107,10 +113,13 @@ async function connectWallet(walletName) {
             document.getElementById("wallet-selection-modal").style.display = "none";
             document.getElementById("landing-screen").style.display = "none";
             document.getElementById("game-setup-screen").style.display = "block";
+        } else {
+            console.error("Wallet connection unsuccessful.");
+            alert("Could not connect wallet. Please try again.");
         }
     } catch (error) {
         console.error("Wallet connection failed:", error);
-        alert("Could not connect wallet. Please try again.");
+        alert("Could not connect wallet. Please try again. Make sure the wallet extension is installed and you have approved the connection.");
     }
 }
 
