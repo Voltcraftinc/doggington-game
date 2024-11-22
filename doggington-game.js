@@ -135,6 +135,60 @@ async function connectWallet(walletName) {
     }
 }
 
+// Function to Sign and Send a Transaction
+async function signAndSendTransaction() {
+    if (!selectedWalletAdapter) {
+        alert("Please connect a wallet first.");
+        return;
+    }
+
+    try {
+        const { Connection, SystemProgram, Transaction, clusterApiUrl } = solanaWeb3;
+        let connection = new Connection(clusterApiUrl('devnet'));
+
+        let transaction = new Transaction().add(
+            SystemProgram.transfer({
+                fromPubkey: selectedWalletAdapter.publicKey,
+                toPubkey: selectedWalletAdapter.publicKey, // Replace with recipient public key
+                lamports: 100, // Amount in lamports to transfer
+            })
+        );
+
+        let { blockhash } = await connection.getRecentBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = selectedWalletAdapter.publicKey;
+
+        let signed = await selectedWalletAdapter.signTransaction(transaction);
+        let txid = await connection.sendRawTransaction(signed.serialize());
+        await connection.confirmTransaction(txid);
+
+        console.log("Transaction successful with ID:", txid);
+        alert("Transaction successful!");
+    } catch (error) {
+        console.error("Transaction failed:", error);
+        alert("Transaction failed. Please try again.");
+    }
+}
+
+// Function to Sign a Message
+async function signMessage() {
+    if (!selectedWalletAdapter) {
+        alert("Please connect a wallet first.");
+        return;
+    }
+
+    try {
+        const message = "Please sign this message for proof of address ownership.";
+        const data = new TextEncoder().encode(message);
+        let signature = await selectedWalletAdapter.signMessage(data);
+        console.log("Message signed successfully with signature:", signature);
+        alert("Message signed successfully!");
+    } catch (error) {
+        console.error("Message signing failed:", error);
+        alert("Message signing failed. Please try again.");
+    }
+}
+
 // Log Out Button Logic
 logoutBtn.addEventListener("click", () => {
     // Reset and hide wallet information
