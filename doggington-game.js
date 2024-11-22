@@ -7,7 +7,6 @@ let waitingForNextRound = false; // Tracks if we are in the delay period between
 let walletAddress = ""; // Wallet address placeholder
 let doggingtonBalance = 10000; // Starting balance for testing
 
-
 // Cards Data
 const cards = [
     { name: "Winston", breed: "Rottweiler", stats: { speed: 7, strength: 9, cuteness: 6, woofFactor: 10 }, img: "images/WINSTON.png" },
@@ -36,13 +35,21 @@ const cards = [
 let selectedWalletAdapter = null;
 let wallets = {};
 
-window.addEventListener('DOMContentLoaded', () => {
-    // Initialize wallet adapters after the page loads
-    wallets = {
-        Phantom: new solanaWalletAdapter.Wallets.PhantomWalletAdapter(),
-        Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
-        Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
-    };
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Initialize wallet adapters after the page loads
+        wallets = {
+            Phantom: window.solana && window.solana.isPhantom ? window.solana : null,
+            Solflare: new solanaWalletAdapter.Wallets.SolflareWalletAdapter(),
+            Glow: new solanaWalletAdapter.Wallets.GlowWalletAdapter()
+        };
+        
+        if (!wallets.Phantom) {
+            console.warn("Phantom Wallet is not available.");
+        }
+    } catch (error) {
+        console.error("Error initializing wallets: ", error);
+    }
 });
 
 // DOM Elements
@@ -94,25 +101,21 @@ document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
 
 async function connectWallet(walletName) {
     try {
-        // Check if the wallet extension is installed in the browser
         if (!wallets[walletName]) {
             console.error("Wallet adapter not found for", walletName);
             alert("Wallet adapter not found. Please make sure the extension is installed.");
             return;
         }
-
-        selectedWalletAdapter = wallets[walletName];
         
-        // Ensure the wallet is ready before attempting to connect
-        if (!selectedWalletAdapter.ready) {
-            console.error(`The ${walletName} wallet is not ready.`);
-            alert(`The ${walletName} wallet is not ready. Please ensure the extension is installed and try again.`);
-            return;
+        selectedWalletAdapter = wallets[walletName];
+        if (walletName === 'Phantom') {
+            await window.solana.connect();
+            selectedWalletAdapter = window.solana;
+        } else {
+            await selectedWalletAdapter.connect();
         }
 
-        await selectedWalletAdapter.connect();
-
-        if (selectedWalletAdapter.connected) {
+        if (selectedWalletAdapter && selectedWalletAdapter.publicKey) {
             walletAddress = selectedWalletAdapter.publicKey.toString();
             walletAddressDisplay.textContent = walletAddress;
             doggingtonBalanceDisplay.textContent = doggingtonBalance;
