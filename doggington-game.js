@@ -78,35 +78,20 @@ document.getElementById("connect-wallet-btn").addEventListener("click", async ()
         // Create a wallet selection modal instead of using prompt
         const walletModal = document.createElement('div');
         walletModal.id = 'wallet-selection-modal';
-        walletModal.style.position = 'fixed';
-        walletModal.style.top = '50%';
-        walletModal.style.left = '50%';
-        walletModal.style.transform = 'translate(-50%, -50%)';
-        walletModal.style.padding = '20px';
-        walletModal.style.backgroundColor = '#fff';
-        walletModal.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-        walletModal.style.zIndex = '1000';
-        walletModal.style.textAlign = 'center';
+        walletModal.className = 'modal';
+
+        const walletContent = document.createElement('div');
+        walletContent.className = 'modal-content';
 
         const walletTitle = document.createElement('h3');
         walletTitle.textContent = 'Select a Wallet to Connect';
         walletTitle.style.marginBottom = '15px';
-        walletModal.appendChild(walletTitle);
+        walletContent.appendChild(walletTitle);
 
         Object.keys(wallets).forEach(walletName => {
             const walletButton = document.createElement('button');
             walletButton.textContent = walletName + ' Wallet';
             walletButton.className = 'wallet-button';
-            walletButton.style.margin = '10px 0';
-            walletButton.style.padding = '10px';
-            walletButton.style.width = '80%';
-            walletButton.style.backgroundColor = '#ff9800';
-            walletButton.style.color = '#fff';
-            walletButton.style.border = 'none';
-            walletButton.style.cursor = 'pointer';
-            walletButton.style.fontSize = '1rem';
-            walletButton.style.borderRadius = '5px';
-
             walletButton.addEventListener('click', async () => {
                 try {
                     selectedWalletAdapter = wallets[walletName];
@@ -130,26 +115,18 @@ document.getElementById("connect-wallet-btn").addEventListener("click", async ()
                 document.body.removeChild(walletModal);
             });
 
-            walletModal.appendChild(walletButton);
+            walletContent.appendChild(walletButton);
         });
 
         const cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
         cancelButton.className = 'wallet-button-cancel';
-        cancelButton.style.margin = '15px 0';
-        cancelButton.style.padding = '10px';
-        cancelButton.style.width = '80%';
-        cancelButton.style.backgroundColor = '#ff4444';
-        cancelButton.style.color = '#fff';
-        cancelButton.style.border = 'none';
-        cancelButton.style.cursor = 'pointer';
-        cancelButton.style.fontSize = '1rem';
-        cancelButton.style.borderRadius = '5px';
         cancelButton.addEventListener('click', () => {
             document.body.removeChild(walletModal);
         });
-        walletModal.appendChild(cancelButton);
+        walletContent.appendChild(cancelButton);
 
+        walletModal.appendChild(walletContent);
         document.body.appendChild(walletModal);
     } catch (error) {
         console.error("Failed to connect wallet:", error);
