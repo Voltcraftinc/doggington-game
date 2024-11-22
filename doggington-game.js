@@ -5,7 +5,7 @@ let selectedCards = null;
 let selectedWager = null;
 let waitingForNextRound = false; // Tracks if we are in the delay period between rounds
 let walletAddress = ""; // Wallet address placeholder
-let doggingtonBalance = 10000; // Starting balance for testing
+let doggingtonBalance = 0; // Updated to start with real balance once fetched
 
 // Cards Data
 const cards = [
@@ -119,7 +119,8 @@ async function connectWallet(walletName) {
         if (selectedWalletAdapter && selectedWalletAdapter.publicKey) {
             walletAddress = selectedWalletAdapter.publicKey.toString();
             walletAddressDisplay.textContent = walletAddress;
-            doggingtonBalanceDisplay.textContent = doggingtonBalance;
+            // Fetch Doggington Token Balance
+            await updateDoggingtonBalance();
 
             // Hide wallet modal and show the game setup screen
             document.getElementById("top-bar").style.display = "flex";
@@ -136,6 +137,41 @@ async function connectWallet(walletName) {
     }
 }
 
+// Function to Update Doggington Token Balance
+async function updateDoggingtonBalance() {
+    try {
+        const tokenAddress = '9KQFQeqtVZ3mpo6asGKUiv9xEwuZYqWeAL781AABKD8f';
+        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+        const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+            selectedWalletAdapter.publicKey,
+            {
+                programId: new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+            }
+        );
+
+        console.log("Fetched Token Accounts: ", tokenAccounts);
+        let balance = 0;
+        tokenAccounts.value.forEach(({ account }) => {
+            const tokenInfo = account.data.parsed.info;
+            console.log("Checking Token Info: Mint -", tokenInfo.mint, "Expected -", tokenAddress);
+            if (tokenInfo.mint === tokenAddress) {
+                balance = tokenInfo.tokenAmount.uiAmount;
+                console.log("Doggington Token Balance Found: ", balance);
+            }
+        });
+
+        if (balance === 0) {
+            console.warn("No balance found for Doggington tokens.");
+        }
+
+        doggingtonBalance = balance;
+        doggingtonBalanceDisplay.textContent = doggingtonBalance;
+    } catch (error) {
+        console.error("Failed to fetch Doggington balance:", error);
+        doggingtonBalanceDisplay.textContent = "Error fetching balance";
+    }
+}
+
 // Function to Sign and Send a Transaction
 async function signAndSendTransaction() {
     if (!selectedWalletAdapter) {
@@ -145,7 +181,7 @@ async function signAndSendTransaction() {
 
     try {
         const { Connection, SystemProgram, Transaction, clusterApiUrl } = solanaWeb3;
-        let connection = new Connection(clusterApiUrl('devnet'));
+        let connection = new Connection(clusterApiUrl('mainnet-beta'));
 
         let transaction = new Transaction().add(
             SystemProgram.transfer({
@@ -203,7 +239,7 @@ logoutBtn.addEventListener("click", () => {
     // Reset wallet info
     walletAddress = "";
     walletAddressDisplay.textContent = "";
-    doggingtonBalance = 10000; // Reset balance for testing
+    doggingtonBalance = 0; // Reset balance to 0
     doggingtonBalanceDisplay.textContent = doggingtonBalance;
     selectedWalletAdapter = null; // Clear selected wallet adapter
 });
