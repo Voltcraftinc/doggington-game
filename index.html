@@ -29,6 +29,17 @@
         <button id="connect-wallet-btn">Connect Wallet to Play</button>
     </div>
 
+    <!-- Wallet Selection Modal -->
+    <div id="wallet-selection-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Select a Wallet to Connect</h3>
+            <button class="wallet-button" id="phantom-wallet-btn">Phantom Wallet</button>
+            <button class="wallet-button" id="solflare-wallet-btn">Solflare Wallet</button>
+            <button class="wallet-button" id="glow-wallet-btn">Glow Wallet</button>
+            <button class="wallet-button-cancel" id="cancel-wallet-btn">Cancel</button>
+        </div>
+    </div>
+
     <!-- Game Setup Screen -->
     <div id="game-setup-screen" class="screen" style="display: none;">
         <h2>Select Game Options</h2>
@@ -100,6 +111,33 @@
 
     <!-- Your Game JavaScript -->
     <script src="doggington-game.js"></script>
+    <script>
+        // Wallet Selection Modal Logic
+        document.getElementById("connect-wallet-btn").addEventListener("click", () => {
+            document.getElementById("wallet-selection-modal").style.display = "flex";
+        });
+
+        document.getElementById("cancel-wallet-btn").addEventListener("click", () => {
+            document.getElementById("wallet-selection-modal").style.display = "none";
+        });
+
+        document.getElementById("phantom-wallet-btn").addEventListener("click", () => {
+            selectWallet('Phantom');
+        });
+
+        document.getElementById("solflare-wallet-btn").addEventListener("click", () => {
+            selectWallet('Solflare');
+        });
+
+        document.getElementById("glow-wallet-btn").addEventListener("click", () => {
+            selectWallet('Glow');
+        });
+
+        function selectWallet(walletType) {
+            document.getElementById("wallet-selection-modal").style.display = "none";
+            // Wallet connection logic is in JS file.
+        }
+    </script>
 </body>
 
 </html>
